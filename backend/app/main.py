@@ -3,6 +3,8 @@ from app.models.base import Base
 from app.core.database import engine
 from app.routes.gstin import router as gstin_router
 from app.routes.compliance import router as compliance_router
+from app.routes.whatsapp import router as whatsapp_router
+
 
 
 app = FastAPI(
@@ -13,6 +15,7 @@ app = FastAPI(
 
 app.include_router(gstin_router)
 app.include_router(compliance_router)
+app.include_router(whatsapp_router)
 
 @app.on_event("startup")
 def startup():
