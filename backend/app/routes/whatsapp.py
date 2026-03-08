@@ -248,6 +248,10 @@ def process_confirmed_invoice(sender: str) -> str:
     )
 
     from app.services.invoice_service import save_invoice
+    from app.services.classification_service import classify_invoice
+
+    # Classify invoice for ITC eligibility under Section 17(5)
+    classification = classify_invoice(fields)
     db_result = save_invoice(sender, fields)
 
     msg = "Invoice save ho gayi! ✅\n\n"
@@ -261,8 +265,18 @@ def process_confirmed_invoice(sender: str) -> str:
         msg += f"\n💰 ITC Mila: Rs.{round(total_tax, 2)}\n"
     if db_result.get("success"):
         msg += f"📊 Is Mahine Ka Total ITC: Rs.{db_result['itc_total']}\n"
-        msg += f"📄 Invoice ID: #{db_result['invoice_id']}"
+        msg += f"📄 Invoice ID: #{db_result['invoice_id']}\n"
     else:
-        msg += f"\n⚠️ DB save mein error: {db_result.get('error', 'unknown')}"
-    msg += "\n\nAur invoices bhejte rahein! 📄"
+        msg += f"\n⚠️ DB save mein error: {db_result.get('error', 'unknown')}\n"
+
+    # AI Classification result
+    msg += f"\n🧠 AI Analysis:\n"
+    msg += f"Category: {classification['category']}\n"
+    if classification.get('itc_blocked') and classification.get('itc_blocked') > 0:
+        msg += f"⚠️ ITC BLOCKED: Rs.{classification['itc_blocked']}\n"
+        msg += f"Reason: {classification['reason']}\n"
+    else:
+        msg += f"✅ ITC Eligible: Rs.{classification['itc_eligible']}\n"
+
+    msg += "\nAur invoices bhejte rahein! 📄"
     return msg
