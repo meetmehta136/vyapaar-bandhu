@@ -1,3 +1,4 @@
+```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.models.base import Base
@@ -19,8 +20,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:3000",
-        "https://vyapaarbandhu-ca-elite.vercel.app",
         "https://vyapaarbandhu-ca-elite-3u61v8vj5-mavrickds136-6353s-projects.vercel.app",
+        "https://*.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
