@@ -65,7 +65,7 @@ def get_clients(db: Session = Depends(get_db)):
 
             result.append({
                 "id": str(user.id),
-                "name": user.business_name or "Unknown",
+                "name": user.business_name or user.phone or "Unknown",
                 "gstin": user.gstin or "",
                 "state": user.state_code or "",
                 "whatsapp": user.phone or "",
@@ -87,7 +87,7 @@ def get_client_detail(client_id: int, db: Session = Depends(get_db)):
         if not user:
             return {"error": "Client not found"}
 
-        invoices = db.query(Invoice).filter(Invoice.user_id == client_id).all()
+        invoices = db.query(Invoice, User).join(User, Invoice.user_id == User.id, isouter=True).all()
         period = datetime.now().strftime("%Y-%m")
         ledger = db.query(GSTLedger).filter(
             GSTLedger.user_id == client_id,
@@ -139,7 +139,7 @@ def get_invoices(db: Session = Depends(get_db)):
             result.append({
                 "id": str(inv.id),
                 "clientId": str(inv.user_id),
-                "clientName": user.business_name if user else "Unknown",
+                "clientName": user.business_name or user.phone or "Unknown",
                 "invoiceNo": inv.invoice_no or "",
                 "date": str(inv.date or ""),
                 "supplierGstin": inv.seller_gstin or "",
