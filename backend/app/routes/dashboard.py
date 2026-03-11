@@ -4,6 +4,30 @@ from sqlalchemy import func
 from app.core.database import get_db
 from app.models.base import Invoice, GSTLedger, User
 from datetime import datetime
+from pydantic import BaseModel
+
+class ClientCreate(BaseModel):
+    name: str
+    phone: str
+    gstin: str = ""
+    state: str = ""
+
+@router.post("/clients")
+def create_client(client: ClientCreate, db: Session = Depends(get_db)):
+    try:
+        user = User(
+            business_name=client.name,
+            phone=client.phone,
+            gstin=client.gstin,
+            state_code=client.state
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        return {"success": True, "id": str(user.id)}
+    except Exception as e:
+        return {"error": str(e)}
+
 
 router = APIRouter(prefix="/api", tags=["Dashboard API"])
 
@@ -125,6 +149,8 @@ def get_client_detail(client_id: int, db: Session = Depends(get_db)):
         }
     except Exception as e:
         return {"error": str(e)}
+    
+    
 
 
 @router.get("/invoices")
