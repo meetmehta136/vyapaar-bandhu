@@ -76,6 +76,85 @@ def build_confirmation_message(fields: dict, gstin_status: str) -> str:
     return msg
 
 
+def get_monthly_summary(sender: str) -> str:
+    """Generate monthly GST summary for the user."""
+    from app.core.database import SessionLocal
+    from app.models.base import User, Invoice, GSTLedger
+    from app.services.compliance_engine import get_filing_deadlines
+    from datetime import datetime
+
+    phone  = sender.replace("whatsapp:+91", "").replace("whatsapp:+", "").replace("whatsapp:", "")[:15]
+    now    = datetime.utcnow()
+    period = now.strftime("%Y-%m")
+    month_name = now.strftime("%B %Y")
+
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.phone == phone).first()
+        if not user:
+            return "Koi data nahi mila. Pehle invoice bhejiye!"
+
+        # All invoices this month
+        month_start = datetime(now.year, now.month, 1)
+        invoices = db.query(Invoice).filter(
+            Invoice.user_id == user.id,
+            Invoice.date    >= month_start
+        ).all()
+
+        # Ledger
+        ledger = db.query(GSTLedger).filter(
+            GSTLedger.user_id == user.id,
+            GSTLedger.period  == period
+        ).first()
+
+        total_invoices  = len(invoices)
+        total_purchases = sum(inv.taxable_amt or 0 for inv in invoices)
+        total_itc       = round(ledger.itc_available if ledger else 0, 2)
+
+        # Count blocked invoices
+        blocked_count = sum(1 for inv in invoices if inv.status == "blocked")
+
+        # Deadlines
+        deadlines     = get_filing_deadlines(period)
+        days_to_3b    = deadlines.get("days_to_gstr3b", 0)
+        days_to_gstr1 = deadlines.get("days_to_gstr1", 0)
+        gstr3b_date   = deadlines.get("gstr3b_deadline", "20th")
+        gstr1_date    = deadlines.get("gstr1_deadline", "11th")
+
+        urgency = "🔴" if days_to_3b <= 3 else "🟡" if days_to_3b <= 7 else "🟢"
+
+        msg  = f"📊 GST Monthly Report\n"
+        msg += f"📅 {month_name}\n"
+        msg += "================================\n\n"
+        msg += f"📄 Invoices Upload: {total_invoices}\n"
+        msg += f"🛒 Total Purchases: Rs.{total_purchases:,.2f}\n"
+        msg += f"💰 ITC Claimable:   Rs.{total_itc:,.2f}\n"
+        if blocked_count > 0:
+            msg += f"⚠️ Blocked Invoices: {blocked_count} (Sec 17(5))\n"
+        msg += f"\n{urgency} Deadlines:\n"
+        msg += f"  GSTR-1:  {gstr1_date} ({days_to_gstr1} din baaki)\n"
+        msg += f"  GSTR-3B: {gstr3b_date} ({days_to_3b} din baaki)\n"
+
+        if days_to_3b <= 3:
+            msg += f"\n🚨 URGENT! Sirf {days_to_3b} din bacha hai!\n"
+            msg += "Apne CA se abhi contact karein!\n"
+        elif days_to_3b <= 7:
+            msg += f"\n⚠️ {days_to_3b} din baaki — baaki invoices jaldi bhejiye!\n"
+        else:
+            msg += f"\n✅ {days_to_3b} din baaki — sab theek chal raha hai!\n"
+
+        msg += "================================\n"
+        msg += "Aur invoices bhejte rahein! 📄"
+
+        return msg
+
+    except Exception as e:
+        print(f"❌ Summary error: {e}")
+        return "Summary generate karne mein error aaya. Dobara try karein."
+    finally:
+        db.close()
+
+
 @router.post("/webhook")
 async def whatsapp_webhook(
     request: Request,
@@ -241,28 +320,59 @@ def handle_text(body: str, sender: str) -> str:
             "'yes' -> Save\n'no' -> Cancel\n'edit date' -> Field badlein"
         )
 
-    if any(w in body_lower for w in ["hello", "hi", "namaste", "helo"]):
+    # ── Monthly Summary ───────────────────────────────────────────────────────
+    if any(w in body_lower for w in ["summary", "report", "kitna itc", "total itc",
+                                      "mahina", "monthly", "month", "sara", "sab"]):
+        return get_monthly_summary(sender)
+
+    # ── Greetings ─────────────────────────────────────────────────────────────
+    elif any(w in body_lower for w in ["hello", "hi", "namaste", "helo", "hey"]):
         return (
-            "Namaste! VyapaarBandhu mein swagat hai!\n\n"
-            "1. Invoice ki photo bhejiye -> ITC calculate karunga\n"
-            "2. Bank statement PDF bhejiye -> transactions parse karunga\n"
-            "3. 'tax' likhiye -> GST liability\n"
-            "4. 'deadline' likhiye -> filing dates"
+            "Namaste! VyapaarBandhu mein swagat hai! 🙏\n\n"
+            "1. Invoice ki photo bhejiye -> ITC calculate\n"
+            "2. Bank PDF bhejiye -> transactions parse\n"
+            "3. 'summary' -> is mahine ka poora report\n"
+            "4. 'deadline' -> filing dates\n"
+            "5. 'help' -> sab commands"
         )
-    elif any(w in body_lower for w in ["tax", "gst", "kitna", "liability"]):
-        return "Is mahine abhi tak koi invoice upload nahi hua.\nInvoice ki photo bhejiye!"
-    elif any(w in body_lower for w in ["deadline", "date", "last date", "due"]):
+
+    # ── Tax query — redirect to summary ──────────────────────────────────────
+    elif any(w in body_lower for w in ["tax", "gst", "kitna", "liability", "bharna"]):
+        return get_monthly_summary(sender)
+
+    # ── Deadlines ─────────────────────────────────────────────────────────────
+    elif any(w in body_lower for w in ["deadline", "date", "last date", "due", "filing"]):
         from app.services.compliance_engine import get_filing_deadlines
         from datetime import datetime
-        period = datetime.now().strftime("%Y-%m")
+        period    = datetime.now().strftime("%Y-%m")
         deadlines = get_filing_deadlines(period)
+        days_3b   = deadlines.get("days_to_gstr3b", 0)
+        urgency   = "🔴" if days_3b <= 3 else "🟡" if days_3b <= 7 else "🟢"
         return (
-            f"Filing Deadlines:\n"
-            f"GSTR-1: {deadlines['gstr1_deadline']} ({deadlines['days_to_gstr1']} din baaki)\n"
-            f"GSTR-3B: {deadlines['gstr3b_deadline']} ({deadlines['days_to_gstr3b']} din baaki)"
+            f"📅 Filing Deadlines:\n\n"
+            f"GSTR-1:  {deadlines['gstr1_deadline']} ({deadlines['days_to_gstr1']} din baaki)\n"
+            f"GSTR-3B: {deadlines['gstr3b_deadline']} ({days_3b} din baaki) {urgency}\n\n"
+            f"'summary' likhiye poori details ke liye."
         )
+
+    # ── Help ──────────────────────────────────────────────────────────────────
+    elif any(w in body_lower for w in ["help", "madad", "commands"]):
+        return (
+            "VyapaarBandhu Commands:\n\n"
+            "📸 Invoice photo -> ITC calculate\n"
+            "🏦 Bank PDF -> transactions parse\n"
+            "📊 'summary' -> monthly report\n"
+            "📅 'deadline' -> filing dates\n"
+            "❓ 'help' -> yeh message\n\n"
+            "Koi bhi invoice photo bhejiye shuru karne ke liye!"
+        )
+
     else:
-        return "'hello' likhiye shuru karne ke liye\nYa invoice ki photo bhejiye!"
+        return (
+            "'hello' likhiye shuru karne ke liye\n"
+            "'summary' likhiye monthly report ke liye\n"
+            "Ya invoice ki photo bhejiye!"
+        )
 
 
 def apply_field_edit(sender: str, field_name: str, new_value: str) -> str:
@@ -331,7 +441,7 @@ def process_confirmed_invoice(sender: str) -> str:
     from app.services.classification_service import classify_invoice
 
     classification = classify_invoice(fields)
-    db_result = save_invoice(sender, fields)
+    db_result      = save_invoice(sender, fields)
 
     msg = "Invoice save ho gayi! ✅\n\n"
     if fields["invoice_no"]["value"]:
