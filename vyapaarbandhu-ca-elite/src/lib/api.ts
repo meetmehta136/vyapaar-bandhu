@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://vyapaar-bandhu.onrender.com';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://vyapaar-bandhu-h53q.onrender.com';
 
 async function fetchAPI(endpoint: string) {
   try {
