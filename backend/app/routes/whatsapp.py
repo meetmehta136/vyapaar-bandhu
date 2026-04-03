@@ -46,7 +46,6 @@ def send_whatsapp_message(to: str, body: str):
 
 
 def _get_gstin_status(fields: dict) -> str:
-    """Validate GSTIN and auto-correct if needed. Updates field in place."""
     gstin_val = fields.get("seller_gstin", {}).get("value")
     if not gstin_val:
         return ""
@@ -383,10 +382,16 @@ def process_confirmed_invoice(sender: str) -> str:
     from app.services.invoice_service import save_invoice
     from app.services.classification_service import classify_invoice
 
-    classification = classify_invoice(fields)
-    db_result      = save_invoice(sender, fields)
+    # Save invoice first — fast DB operation
+    db_result = save_invoice(sender, fields)
 
-    msg = "Invoice save ho gayi! ✅\n\n"
+    # Run classification in background — don't block reply
+    threading.Thread(target=classify_invoice, args=(fields,), daemon=True).start()
+
+    # Use tax type as category placeholder
+    category = "GST Purchase"
+
+    msg = "✅ Invoice save ho gayi!\n\n"
     if fields["invoice_no"]["value"]:
         msg += f"Invoice: {fields['invoice_no']['value']}\n"
     if fields["invoice_date"]["value"]:
@@ -394,20 +399,13 @@ def process_confirmed_invoice(sender: str) -> str:
     if fields["total_amount"]["value"]:
         msg += f"Total: Rs.{fields['total_amount']['value']}\n"
     if total_tax > 0:
-        msg += f"\n💰 ITC Mila: Rs.{round(total_tax, 2)} ({tax_type})\n"
+        msg += f"\n💰 ITC Mila: Rs.{round(total_tax, 2)}\n"
+        msg += f"({tax_type})\n"
     if db_result.get("success"):
         msg += f"📊 Is Mahine Ka Total ITC: Rs.{db_result['itc_total']}\n"
         msg += f"📄 Invoice ID: #{db_result['invoice_id']}\n"
     else:
         msg += f"\n⚠️ DB save mein error: {db_result.get('error', 'unknown')}\n"
-
-    msg += f"\n🧠 AI Analysis:\n"
-    msg += f"Category: {classification['category']}\n"
-    if classification.get('itc_blocked') and classification.get('itc_blocked') > 0:
-        msg += f"⚠️ ITC BLOCKED: Rs.{classification['itc_blocked']}\n"
-        msg += f"Reason: {classification['reason']}\n"
-    else:
-        msg += f"✅ ITC Eligible: Rs.{classification['itc_eligible']}\n"
 
     msg += "\nAur invoices bhejte rahein! 📄"
     return msg
