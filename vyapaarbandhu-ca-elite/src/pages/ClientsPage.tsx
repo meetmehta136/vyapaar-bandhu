@@ -82,7 +82,7 @@ const ClientsPage = () => {
     try {
       // Call backend to send WhatsApp reminder
       const res = await fetch(
-        `https://vyapaar-bandhu.onrender.com/api/clients/${client.id}/remind`,
+        `https://vyapaar-bandhu-h53q.onrender.com/api/clients/${client.id}/remind`,
         { method: 'POST' }
       );
       if (res.ok) {
@@ -98,7 +98,7 @@ const ClientsPage = () => {
 
   const handleDownloadPdf = (client: any) => {
     window.open(
-      `https://vyapaar-bandhu.onrender.com/api/clients/${client.id}/filing-pdf`,
+      `https://vyapaar-bandhu-h53q.onrender.com/api/clients/${client.id}/filing-pdf`,
       '_blank'
     );
     toast({ title: '📄 PDF opening...', description: `Filing summary for ${client.name}.` });

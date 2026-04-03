@@ -26,7 +26,7 @@ export const useAuth = () => {
   return ctx;
 };
 
-const BASE_URL    = import.meta.env.VITE_API_URL || 'https://vyapaar-bandhu.onrender.com';
+const BASE_URL    = import.meta.env.VITE_API_URL || 'https://vyapaar-bandhu-h53q.onrender.com';
 const TOKEN_KEY   = 'vb_token';
 const PROFILE_KEY = 'vb_profile';
 
