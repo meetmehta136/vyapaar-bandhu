@@ -20,6 +20,7 @@
 <br/>
 
 [![API Live](https://img.shields.io/badge/⚡_API-LIVE-00d26a?style=for-the-badge&labelColor=0a0a0a)](https://vyapaar-bandhu-h53q.onrender.com/docs)
+[![Website](https://img.shields.io/badge/🌍_Website-LIVE-00d26a?style=for-the-badge&labelColor=0a0a0a)](https://vyapaar-bandhu-web.vercel.app/)
 [![Dashboard](https://img.shields.io/badge/📊_Dashboard-LIVE-4f8ef7?style=for-the-badge&labelColor=0a0a0a)](https://vyapaar-bandhu.vercel.app)
 [![HuggingFace](https://img.shields.io/badge/🤗_Model-IndicBERT-ff9500?style=for-the-badge&labelColor=0a0a0a)](https://huggingface.co/meet136/indicbert-gst-classifier)
 [![Solo Build](https://img.shields.io/badge/👤_Built_Solo-8_Weeks-e040fb?style=for-the-badge&labelColor=0a0a0a)]()
@@ -325,6 +326,7 @@ DEFAULT_CA_ID=1
 
 | | |
 |---|---|
+| 🌍 Website | https://vyapaar-bandhu-web.vercel.app/ |
 | 📡 API Docs | https://vyapaar-bandhu-h53q.onrender.com/docs |
 | 📊 CA Dashboard | https://vyapaar-bandhu.vercel.app |
 | 🤗 ML Model | https://huggingface.co/meet136/indicbert-gst-classifier |
