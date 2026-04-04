@@ -67,7 +67,7 @@ def check_duplicate_invoice(phone: str, fields: dict) -> dict:
         db.close()
 
 
-def save_invoice(phone: str, fields: dict) -> dict:
+def save_invoice(phone: str, fields: dict, ai_category: str = None, ai_confidence: float = None) -> dict:
     phone = phone.replace("whatsapp:+91", "").replace("whatsapp:+", "").replace("whatsapp:", "")[:15]
     db: Session = SessionLocal()
     try:
