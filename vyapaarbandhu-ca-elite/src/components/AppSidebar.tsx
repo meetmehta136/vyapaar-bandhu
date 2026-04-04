@@ -36,16 +36,18 @@ const AppSidebar = () => {
   const planLabel = plan.toUpperCase();
 
   return (
-    <aside className="w-[220px] h-screen flex flex-col flex-shrink-0 sticky top-0"
+    <aside className="w-[240px] h-screen flex flex-col flex-shrink-0 sticky top-0"
       style={{ background: 'hsl(0 0% 3%)', borderRight: '1px solid hsl(0 0% 9%)' }}>
 
       {/* Logo */}
-      <div className="px-5 py-5 border-b" style={{ borderColor: 'hsl(0 0% 9%)' }}>
+      <div className="px-5 py-4 border-b" style={{ borderColor: 'hsl(0 0% 9%)' }}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs text-white font-display"
-            style={{ background: 'linear-gradient(135deg, hsl(239 84% 67%), hsl(239 84% 50%))' }}>
-            VB
-          </div>
+          <img
+            src="/VBLogo.png"
+            alt="VyapaarBandhu"
+            className="w-10 h-10 object-contain rounded-xl"
+            style={{ background: 'white', padding: '2px' }}
+          />
           <div>
             <div className="font-bold text-foreground text-sm font-display leading-tight">VyapaarBandhu</div>
             <div className="text-[10px] text-muted-foreground tracking-wider">CA PORTAL</div>
@@ -54,7 +56,7 @@ const AppSidebar = () => {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto scrollbar-thin">
+      <nav className="flex-1 py-3 px-3 space-y-1 overflow-y-auto scrollbar-thin">
         {navItems.map((item) => {
           const isActive =
             location.pathname === item.path ||
@@ -65,17 +67,17 @@ const AppSidebar = () => {
               key={item.path}
               onClick={() => navigate(item.path)}
               className={cn(
-                'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 group relative',
+                'w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all duration-150 group relative',
                 isActive
                   ? 'bg-primary/12 text-foreground font-semibold'
                   : 'text-muted-foreground hover:text-foreground hover:bg-white/5 font-medium'
               )}
             >
               {isActive && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-primary" />
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r-full bg-primary" />
               )}
-              <span className="text-base leading-none">{item.emoji}</span>
-              <span className="font-display text-[13px]">{item.label}</span>
+              <span className="text-lg leading-none">{item.emoji}</span>
+              <span className="font-display text-[14px]">{item.label}</span>
               {item.badge && (
                 <span className={cn(
                   'ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-md tracking-wider font-display',
@@ -97,7 +99,7 @@ const AppSidebar = () => {
       {/* Profile */}
       <div className="p-4">
         <div className="flex items-center gap-2.5 mb-3">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold font-display flex-shrink-0 text-primary-val"
+          <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold font-display flex-shrink-0 text-primary-val"
             style={{ background: 'hsl(239 84% 67% / 0.15)', border: '1px solid hsl(239 84% 67% / 0.25)' }}>
             {initials}
           </div>
