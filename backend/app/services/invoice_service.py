@@ -2,35 +2,44 @@ from sqlalchemy.orm import Session
 from app.models.base import User, Invoice, GSTLedger
 from app.core.database import SessionLocal
 from datetime import datetime
+import os
 
 
-def get_or_create_user(phone: str) -> User:
+def _default_ca_id() -> int:
+    try:
+        return int(os.getenv("DEFAULT_CA_ID", "1"))
+    except:
+        return 1
+
+
+def get_or_create_user(phone: str, ca_id: int = None) -> User:
     phone = phone.replace("whatsapp:+91", "").replace("whatsapp:+", "").replace("whatsapp:", "")[:15]
+    if ca_id is None:
+        ca_id = _default_ca_id()
     db: Session = SessionLocal()
     try:
         user = db.query(User).filter(User.phone == phone).first()
         if not user:
-            user = User(phone=phone)
+            user = User(phone=phone, ca_id=ca_id)
             db.add(user)
             db.commit()
             db.refresh(user)
-            print(f"✅ New user created: {phone}")
+            print(f"? New user created: {phone} linked to CA {ca_id}")
+        elif not user.ca_id:
+            user.ca_id = ca_id
+            db.commit()
+            db.refresh(user)
+            print(f"? Backfilled ca_id={ca_id} for user {phone}")
         return user
     finally:
         db.close()
 
 
 def check_duplicate_invoice(phone: str, fields: dict) -> dict:
-    """
-    Check if this invoice already exists for this user.
-    Match on: invoice_no + seller_gstin (both must match).
-    Returns: {"is_duplicate": True/False, "existing_id": int, "existing_date": str}
-    """
     phone = phone.replace("whatsapp:+91", "").replace("whatsapp:+", "").replace("whatsapp:", "")[:15]
     invoice_no   = (fields.get("invoice_no",   {}).get("value") or "").strip()
     seller_gstin = (fields.get("seller_gstin", {}).get("value") or "").strip()
 
-    # Can't detect duplicate without at least invoice number
     if not invoice_no:
         return {"is_duplicate": False}
 
@@ -44,39 +53,41 @@ def check_duplicate_invoice(phone: str, fields: dict) -> dict:
             Invoice.user_id    == user.id,
             Invoice.invoice_no == invoice_no
         )
-
-        # If GSTIN also available, match on both for stronger check
         if seller_gstin:
             query = query.filter(Invoice.seller_gstin == seller_gstin)
 
         existing = query.first()
-
         if existing:
             existing_date = existing.date.strftime("%d-%m-%Y") if existing.date else "unknown date"
-            print(f"⚠️ Duplicate detected: Invoice #{invoice_no} already saved as ID={existing.id}")
+            print(f"?? Duplicate detected: Invoice #{invoice_no} already saved as ID={existing.id}")
             return {
-                "is_duplicate": True,
-                "existing_id":   existing.id,
-                "existing_date": existing_date,
+                "is_duplicate":   True,
+                "existing_id":    existing.id,
+                "existing_date":  existing_date,
                 "existing_total": round((existing.cgst or 0) + (existing.sgst or 0) + (existing.igst or 0), 2)
             }
-
         return {"is_duplicate": False}
-
     finally:
         db.close()
 
 
 def save_invoice(phone: str, fields: dict, ai_category: str = None, ai_confidence: float = None) -> dict:
     phone = phone.replace("whatsapp:+91", "").replace("whatsapp:+", "").replace("whatsapp:", "")[:15]
+    ca_id = _default_ca_id()
     db: Session = SessionLocal()
     try:
         user = db.query(User).filter(User.phone == phone).first()
         if not user:
-            user = User(phone=phone)
+            user = User(phone=phone, ca_id=ca_id)
             db.add(user)
             db.commit()
             db.refresh(user)
+            print(f"? New user created: {phone} linked to CA {ca_id}")
+        elif not user.ca_id:
+            user.ca_id = ca_id
+            db.commit()
+            db.refresh(user)
+            print(f"? Backfilled ca_id={ca_id} for user {phone}")
 
         date_val = None
         raw_date = fields.get("invoice_date", {}).get("value")
@@ -97,18 +108,16 @@ def save_invoice(phone: str, fields: dict, ai_category: str = None, ai_confidenc
             cgst         = fields.get("cgst", {}).get("value") or 0,
             sgst         = fields.get("sgst", {}).get("value") or 0,
             igst         = fields.get("igst", {}).get("value") or 0,
-            status       = "confirmed"
+            status       = "pending"
         )
-        # AI MOAT: persist classification
         if ai_category:
             invoice.ai_category   = ai_category
             invoice.ai_confidence = ai_confidence
         db.add(invoice)
         db.commit()
         db.refresh(invoice)
-        print(f"✅ Invoice saved: ID={invoice.id}")
+        print(f"? Invoice saved: ID={invoice.id}")
 
-        # Fix: inter-state (IGST only) vs intra-state (CGST + SGST)
         igst = invoice.igst or 0
         cgst = invoice.cgst or 0
         sgst = invoice.sgst or 0
@@ -133,8 +142,7 @@ def save_invoice(phone: str, fields: dict, ai_category: str = None, ai_confidenc
         ledger.total_purchases = (ledger.total_purchases or 0) + (invoice.taxable_amt or 0)
         ledger.itc_available   = (ledger.itc_available   or 0) + itc_amount
         db.commit()
-
-        print(f"✅ ITC updated: +Rs.{itc_amount} | Total ITC: Rs.{ledger.itc_available}")
+        print(f"? ITC updated: +Rs.{itc_amount} | Total ITC: Rs.{ledger.itc_available}")
 
         return {
             "success":    True,
@@ -145,7 +153,7 @@ def save_invoice(phone: str, fields: dict, ai_category: str = None, ai_confidenc
         }
 
     except Exception as e:
-        print(f"❌ DB Error: {e}")
+        print(f"? DB Error: {e}")
         db.rollback()
         return {"success": False, "error": str(e)}
     finally:

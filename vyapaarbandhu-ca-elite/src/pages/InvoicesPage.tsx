@@ -30,6 +30,7 @@ type TabType = 'all' | 'confirmed' | 'pending' | 'rejected';
 const InvoicesPage = () => {
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState<TabType>('all');
+  const [clientFilter, setClientFilter] = useState<string>('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const { toast } = useToast();
@@ -37,12 +38,17 @@ const InvoicesPage = () => {
 
   const invoices = invoicesData || [];
 
+  const uniqueClients = Array.from(
+    new Map(invoices.map((inv: any) => [inv.clientId, { id: inv.clientId, name: inv.clientName || 'Unknown' }])).values()
+  );
+
   const filtered = invoices.filter((inv: any) => {
     const matchesSearch =
       (inv.clientName || '').toLowerCase().includes(search.toLowerCase()) ||
       (inv.invoiceNo || '').toLowerCase().includes(search.toLowerCase());
     const matchesTab = tab === 'all' || inv.status === tab;
-    return matchesSearch && matchesTab;
+    const matchesClient = clientFilter === 'all' || inv.clientId === clientFilter;
+    return matchesSearch && matchesTab && matchesClient;
   });
 
   const totalItc = invoices.reduce((s: number, i: any) => s + (i.itc || 0), 0);
@@ -172,6 +178,23 @@ const InvoicesPage = () => {
           </div>
         ))}
       </div>
+
+      {/* Client Filter */}
+      {uniqueClients.length > 1 && (
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xs text-muted-foreground">Client:</span>
+          <select
+            value={clientFilter}
+            onChange={(e) => setClientFilter(e.target.value)}
+            className="text-xs border border-border rounded-lg px-3 py-1.5 bg-muted text-foreground"
+          >
+            <option value="all">All Clients ({uniqueClients.length})</option>
+            {uniqueClients.map(({ id, name }: { id: string; name: string }) => (
+              <option key={id} value={id}>{name}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 mb-5">
