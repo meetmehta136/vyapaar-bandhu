@@ -136,7 +136,7 @@ const DashboardPage = () => {
   };
 
   /* ── derived data ── */
-  const invoices      = invoicesData || [];
+  const invoices      = Array.isArray(invoicesData) ? invoicesData : (invoicesData as any)?.invoices ?? (invoicesData as any)?.items ?? [];
   const recentInvoices = invoices.slice(0, 6);
 
   const whatsappActivity = invoices.slice(0, 6).map((inv: any) => ({
