@@ -228,6 +228,7 @@ const InvoicesPage = () => {
               <th className="py-3 px-3 text-right text-muted-foreground font-medium">Total</th>
               <th className="py-3 px-3 text-right text-muted-foreground font-medium">ITC</th>
               <th className="py-3 px-3 text-left text-muted-foreground font-medium">Category</th>
+              <th className="py-3 px-3 text-left text-muted-foreground font-medium">AI Details</th>
               <th className="py-3 px-3 text-left text-muted-foreground font-medium">Status</th>
               <th className="py-3 px-3 text-right text-muted-foreground font-medium">Actions</th>
             </tr>
@@ -262,6 +263,48 @@ const InvoicesPage = () => {
                   <span className={cn('px-2 py-0.5 rounded-full text-[10px] font-medium', categoryColors[inv.aiCategory] || 'bg-muted text-muted-foreground')}>
                     {inv.aiCategory || 'General'}
                   </span>
+                </td>
+                <td className="py-2.5 px-3 min-w-[140px]">
+                  {inv.aiConfidence != null && (
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <div className="w-14 h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className={cn('h-full rounded-full',
+                            (inv.aiConfidence ?? 0) >= 0.85 ? 'bg-green-500' :
+                            (inv.aiConfidence ?? 0) >= 0.65 ? 'bg-yellow-500' : 'bg-red-500'
+                          )}
+                          style={{ width: `${Math.round((inv.aiConfidence ?? 0) * 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">
+                        {Math.round((inv.aiConfidence ?? 0) * 100)}%
+                      </span>
+                    </div>
+                  )}
+                  {inv.aiKeywords && (
+                    <p className="text-[9px] text-muted-foreground truncate max-w-[130px]" title={inv.aiKeywords}>
+                      {inv.aiKeywords}
+                    </p>
+                  )}
+                  {inv.aiConfidence != null && (inv.aiConfidence ?? 1) < 0.85 && (
+                    <select
+                      className="text-[9px] border border-border rounded px-1 py-0.5 bg-background text-foreground mt-1 w-full"
+                      defaultValue={inv.aiCategory ?? ''}
+                      onChange={async (e) => {
+                        const base = (import.meta as any).env?.VITE_API_URL || 'https://vyapaar-bandhu.onrender.com';
+                        await fetch(`${base}/api/invoices/${inv.id}/correct`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                          body: new URLSearchParams({ category: e.target.value })
+                        });
+                        refetch?.();
+                      }}
+                    >
+                      {['Food','Capital Goods','Services','Exempt','Blocked','Mixed','Other'].map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  )}
                 </td>
                 <td className="py-2.5 px-3">
                   <span className={cn('px-2 py-0.5 rounded-full text-[10px] font-medium capitalize', statusBadge[inv.status] || 'bg-muted text-muted-foreground')}>

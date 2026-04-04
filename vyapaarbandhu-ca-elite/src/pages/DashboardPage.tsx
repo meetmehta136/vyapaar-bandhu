@@ -259,6 +259,67 @@ const DashboardPage = () => {
           </table>
         </div>
       </div>
+      {/* AI MOAT: Classification Breakdown */}
+      <div className="card-surface p-5 mb-8">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="text-sm font-semibold text-foreground">AI Classification Breakdown</h3>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary-val font-bold">LIVE</span>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4">Every invoice auto-classified by your fine-tuned IndicBERT model</p>
+        {(() => {
+          const catMap: Record<string, { count: number; itc: number }> = {};
+          invoices.forEach((inv: any) => {
+            const cat = inv.aiCategory || 'General';
+            if (!catMap[cat]) catMap[cat] = { count: 0, itc: 0 };
+            catMap[cat].count += 1;
+            catMap[cat].itc   += inv.itc || 0;
+          });
+          const entries = Object.entries(catMap).sort((a, b) => b[1].itc - a[1].itc);
+          const avgConf = invoices.length > 0
+            ? Math.round(invoices.reduce((s: number, i: any) => s + (i.aiConfidence || 0), 0) / invoices.length * 100)
+            : 0;
+          if (entries.length === 0) return (
+            <p className="text-xs text-muted-foreground text-center py-4">No invoices yet.</p>
+          );
+          return (
+            <>
+              <div className="flex gap-3 mb-4 flex-wrap">
+                <div className="px-3 py-2 rounded-lg bg-muted text-xs">
+                  <span className="text-muted-foreground">Avg confidence: </span>
+                  <span className="font-semibold">{avgConf}%</span>
+                </div>
+                <div className="px-3 py-2 rounded-lg bg-muted text-xs">
+                  <span className="text-muted-foreground">Categories: </span>
+                  <span className="font-semibold">{entries.length}</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {entries.map(([cat, data]) => {
+                  const blocked = ['Food & Beverages','Food (Blocked)','Personal Vehicle','Blocked'].includes(cat);
+                  return (
+                    <div key={cat} className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
+                      <div className="flex items-center gap-2">
+                        <span className={cn('px-2 py-0.5 rounded-full text-[10px] font-medium',
+                          blocked ? 'bg-destructive/20 text-destructive-val' : categoryColors[cat] || 'bg-muted text-muted-foreground')}>
+                          {cat}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">{data.count} invoice{data.count !== 1 ? 's' : ''}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className={cn('text-xs font-semibold', blocked ? 'text-destructive-val line-through' : 'text-accent-val')}>
+                          Rs.{data.itc.toLocaleString('en-IN')}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">{blocked ? 'blocked' : 'ITC'}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          );
+        })()}
+      </div>
+
     </AppLayout>
   );
 };

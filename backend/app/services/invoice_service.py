@@ -99,6 +99,10 @@ def save_invoice(phone: str, fields: dict) -> dict:
             igst         = fields.get("igst", {}).get("value") or 0,
             status       = "confirmed"
         )
+        # AI MOAT: persist classification
+        if ai_category:
+            invoice.ai_category   = ai_category
+            invoice.ai_confidence = ai_confidence
         db.add(invoice)
         db.commit()
         db.refresh(invoice)

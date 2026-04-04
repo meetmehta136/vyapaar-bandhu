@@ -61,7 +61,7 @@ def _get_gstin_status(fields: dict) -> str:
         return "Invalid GSTIN - ITC risk!"
 
 
-def build_confirmation_message(fields: dict, gstin_status: str) -> str:
+def build_confirmation_message(fields: dict, gstin_status: str, ai_result: dict = None) -> str:
     msg = "Invoice details mili! Confirm karein:\n"
     msg += "--------------------\n"
     if fields["seller_gstin"]["value"]:
@@ -89,6 +89,27 @@ def build_confirmation_message(fields: dict, gstin_status: str) -> str:
     msg += "'edit date' -> Date badlein\n"
     msg += "'edit gstin' -> GSTIN badlein\n"
     msg += "'edit total' -> Total badlein"
+
+    # AI MOAT: show classification in WhatsApp confirmation
+    if ai_result:
+        cat      = ai_result.get("category", "General")
+        conf     = int(ai_result.get("confidence", 0) * 100)
+        keywords = ", ".join(ai_result.get("matched_keywords", []))
+        cgst_v   = float((fields.get("cgst") or {}).get("value") or 0)
+        sgst_v   = float((fields.get("sgst") or {}).get("value") or 0)
+        igst_v   = float((fields.get("igst") or {}).get("value") or 0)
+        itc_val  = round(cgst_v + sgst_v + igst_v, 2)
+        blocked  = cat in ["Food & Beverages", "Food (Blocked)", "Personal Vehicle", "Blocked"]
+        msg += "\n\nAI Classification:\n"
+        msg += "--------------------\n"
+        msg += f"Category: {cat}\n"
+        msg += f"Confidence: {conf}%\n"
+        if keywords:
+            msg += f"Keywords: {keywords}\n"
+        if blocked:
+            msg += "ITC: Blocked (Section 17(5))\n"
+        elif itc_val > 0:
+            msg += f"ITC Eligible: Rs.{itc_val:,.2f}\n"
     return msg
 
 
@@ -215,8 +236,24 @@ def process_image_background(media_url: str, sender: str):
 
         gstin_status = _get_gstin_status(fields)
 
-        PENDING_CONFIRMATIONS[sender] = {"fields": fields, "awaiting_edit": None}
-        msg = build_confirmation_message(fields, gstin_status)
+        # AI MOAT: classify at scan time so user sees it immediately
+        ai_result = {"category": "General", "confidence": 0.0, "matched_keywords": []}
+        try:
+            from app.services.classification_service import classify_invoice
+            raw = classify_invoice(fields)
+            if isinstance(raw, dict):
+                ai_result = raw
+            elif raw:
+                ai_result = {
+                    "category":         getattr(raw, "category", "General"),
+                    "confidence":       float(getattr(raw, "confidence", 0.0)),
+                    "matched_keywords": list(getattr(raw, "matched_keywords", [])),
+                }
+        except Exception as _e:
+            print(f"Classification error (non-fatal): {_e}")
+
+        PENDING_CONFIRMATIONS[sender] = {"fields": fields, "awaiting_edit": None, "ai_result": ai_result}
+        msg = build_confirmation_message(fields, gstin_status, ai_result)
         send_whatsapp_message(sender, msg)
 
     except Exception as e:
@@ -345,7 +382,7 @@ def apply_field_edit(sender: str, field_name: str, new_value: str) -> str:
     gstin_status = _get_gstin_status(fields)
     label = FIELD_LABELS[field_name]
     msg  = f"{label} update ho gaya: {new_value}\n\n"
-    msg += build_confirmation_message(fields, gstin_status)
+    msg += build_confirmation_message(fields, gstin_status, session.get("ai_result"))
     return msg
 
 
@@ -380,16 +417,19 @@ def process_confirmed_invoice(sender: str) -> str:
         tax_type  = f"CGST: Rs.{cgst} + SGST: Rs.{sgst}"
 
     from app.services.invoice_service import save_invoice
-    from app.services.classification_service import classify_invoice
 
-    # Save invoice first — fast DB operation
-    db_result = save_invoice(sender, fields)
+    # AI MOAT: use classification already done at scan time
+    ai_result = data.get("ai_result", {"category": "General", "confidence": 0.0, "matched_keywords": []})
+    category  = ai_result.get("category", "General")
+    conf_pct  = int(ai_result.get("confidence", 0) * 100)
+    blocked   = category in ["Food & Beverages", "Food (Blocked)", "Personal Vehicle", "Blocked"]
 
-    # Run classification in background — don't block reply
-    threading.Thread(target=classify_invoice, args=(fields,), daemon=True).start()
+    db_result = save_invoice(sender, fields, ai_category=category, ai_confidence=ai_result.get("confidence", 0))
 
-    # Use tax type as category placeholder
-    category = "GST Purchase"
+    cgst_v    = float((fields.get("cgst") or {}).get("value") or 0)
+    sgst_v    = float((fields.get("sgst") or {}).get("value") or 0)
+    igst_v    = float((fields.get("igst") or {}).get("value") or 0)
+    total_itc = round(cgst_v + sgst_v + igst_v, 2)
 
     msg = "✅ Invoice save ho gayi!\n\n"
     if fields["invoice_no"]["value"]:
@@ -398,14 +438,16 @@ def process_confirmed_invoice(sender: str) -> str:
         msg += f"Date: {fields['invoice_date']['value']}\n"
     if fields["total_amount"]["value"]:
         msg += f"Total: Rs.{fields['total_amount']['value']}\n"
-    if total_tax > 0:
-        msg += f"\n💰 ITC Mila: Rs.{round(total_tax, 2)}\n"
-        msg += f"({tax_type})\n"
+    msg += f"\nCategory: {category} ({conf_pct}% AI confidence)\n"
+    if blocked:
+        msg += "ITC: Blocked (Section 17(5))\n"
+        msg += "(Yeh expense ITC eligible nahi hai)\n"
+    elif total_itc > 0:
+        msg += f"ITC Mila: Rs.{total_itc:,.2f}\n"
     if db_result.get("success"):
-        msg += f"📊 Is Mahine Ka Total ITC: Rs.{db_result['itc_total']}\n"
-        msg += f"📄 Invoice ID: #{db_result['invoice_id']}\n"
+        msg += f"Total ITC is mahine: Rs.{db_result['itc_total']:,.2f}\n"
+        msg += f"Invoice ID: #{db_result['invoice_id']}\n"
     else:
-        msg += f"\n⚠️ DB save mein error: {db_result.get('error', 'unknown')}\n"
-
-    msg += "\nAur invoices bhejte rahein! 📄"
+        msg += f"DB save error: {db_result.get('error', 'unknown')}\n"
+    msg += "\nAur invoices bhejte rahein!"
     return msg
