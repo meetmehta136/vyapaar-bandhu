@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VyapaarBandhu — WhatsApp-Native GST Compliance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+
+  <!-- CURSOR -->
+  <div id="cur"></div>
+  <div id="cur-r"></div>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="ld-logo">
+      <img src="assets/images/VBLogo.png" style="height: 70px; object-fit: contain; border-radius: 20%; transform: translate(8px, 8px);"
+        alt="VyapaarBandhu Logo">
+      <defs>
+        <linearGradient id="lg1" x1="0" y1="80" x2="80" y2="0">
+          <stop offset="0%" stop-color="#0a6eff" />
+          <stop offset="100%" stop-color="#00c8ff" />
+        </linearGradient>
+      </defs>
+      <div class="ld-ring"></div>
+    </div>
+    <div class="ld-title">Vyapaar Bandhu</div>
+    <div class="ld-sub">Initialising GST Intelligence</div>
+    <div class="ld-track">
+      <div class="ld-bar"></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">
+      <img src="assets/images/VBLogo.png" alt="VyapaarBandhu Logo"
+        style="height: 40px; object-fit: contain; border-radius: 20%;">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#ca">For CAs</a></li>
+      <li><a href="#tech">Tech</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="https://github.com/meetmehta136/Vyapaar-Bandhu" target="_blank" class="btn-ghost"><i
+          class="fab fa-github"></i> GitHub</a>
+      <a href="https://vyapaarbandhu-ca-elite.vercel.app" target="_blank" class="btn-blue"><i
+          class="fas fa-external-link-alt"></i> Live Demo</a>
+    </div>
+    <button class="ham" id="ham"><span></span><span></span><span></span></button>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="mnav" id="mnav">
+    <button class="mnav-close" id="mnav-close"><i class="fas fa-times"></i></button>
+    <a href="#problem" class="mnl">Problem</a>
+    <a href="#how" class="mnl">How It Works</a>
+    <a href="#features" class="mnl">Features</a>
+    <a href="#ca" class="mnl">For CAs</a>
+    <a href="#tech" class="mnl">Tech Stack</a>
+    <a href="https://vyapaarbandhu-ca-elite.vercel.app" target="_blank" class="mnl" style="color:var(--cyan)">Live Demo
+      ↗</a>
+  </div>
+
+  <!-- ═══════ HERO ═══════ -->
+  <section id="hero">
+    <canvas id="hero-c"></canvas>
+    <div class="hero-bg-grad"></div>
+    <div class="hero-grid"></div>
+    <div class="wrap" style="position:relative;z-index:2;">
+      <div class="hero-badge rv"><span class="pulse-dot"></span>WhatsApp-Native · AI-Powered · India-First</div>
+      <h1 class="hero-title rv d1">
+        GST Compliance,<br>
+        <span class="hl">Done on WhatsApp</span>
+      </h1>
+      <p class="hero-sub rv d2">
+        A shopkeeper <strong>photographs an invoice</strong>, sends it on WhatsApp, and gets ITC calculated, RCM
+        flagged, and a GSTR-3B JSON generated — <strong>in under 20 seconds.</strong> No app. No portal. No learning
+        curve.
+      </p>
+      <div class="hero-btns rv d3">
+        <a href="#" class="btn-hero-main" onclick="openModal('videoModal'); return false;"><i class="fas fa-bolt"></i> See How It Works</a>
+        <a href="#" class="btn-hero-sec" onclick="openModal('caModal'); return false;"><i class="fas fa-chart-bar"></i> CA Dashboard</a>
+        <a href="https://github.com/meetmehta136/Vyapaar-Bandhu" target="_blank" class="btn-hero-sec"><i
+            class="fab fa-github"></i> GitHub</a>
+      </div>
+      <div class="hero-stats rv d4">
+        <div class="h-stat">
+          <div class="h-stat-n">8 Cr+</div>
+          <div class="h-stat-l">GST Taxpayers in India</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-n">&lt;20s</div>
+          <div class="h-stat-l">WhatsApp Response</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-n">87.5%</div>
+          <div class="h-stat-l">OCR Accuracy</div>
+        </div>
+        <div class="h-stat">
+          <div class="h-stat-n">₹24/mo</div>
+          <div class="h-stat-l">Cost per User</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ MARQUEE ═══════ -->
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="mq">
+      <div class="marquee-item"><i class="fab fa-whatsapp"></i> WhatsApp Bot — Live</div>
+      <div class="marquee-item"><i class="fas fa-eye"></i> NVIDIA Nemotron OCR</div>
+      <div class="marquee-item"><i class="fas fa-brain"></i> IndicBERT Classifier</div>
+      <div class="marquee-item"><i class="fas fa-file-invoice-dollar"></i> GSTR-3B JSON Export</div>
+      <div class="marquee-item"><i class="fas fa-university"></i> Bank PDF Parser</div>
+      <div class="marquee-item"><i class="fas fa-shield-alt"></i> Section 17(5) ITC Engine</div>
+      <div class="marquee-item"><i class="fas fa-chart-line"></i> CA Dashboard — Live</div>
+      <div class="marquee-item"><i class="fas fa-bell"></i> Deadline Reminders</div>
+      <div class="marquee-item"><i class="fas fa-check-double"></i> Duplicate Detection</div>
+      <div class="marquee-item"><i class="fas fa-fingerprint"></i> GSTIN Auto-Correction</div>
+      <!-- duplicate for infinite scroll -->
+      <div class="marquee-item"><i class="fab fa-whatsapp"></i> WhatsApp Bot — Live</div>
+      <div class="marquee-item"><i class="fas fa-eye"></i> NVIDIA Nemotron OCR</div>
+      <div class="marquee-item"><i class="fas fa-brain"></i> IndicBERT Classifier</div>
+      <div class="marquee-item"><i class="fas fa-file-invoice-dollar"></i> GSTR-3B JSON Export</div>
+      <div class="marquee-item"><i class="fas fa-university"></i> Bank PDF Parser</div>
+      <div class="marquee-item"><i class="fas fa-shield-alt"></i> Section 17(5) ITC Engine</div>
+      <div class="marquee-item"><i class="fas fa-chart-line"></i> CA Dashboard — Live</div>
+      <div class="marquee-item"><i class="fas fa-bell"></i> Deadline Reminders</div>
+      <div class="marquee-item"><i class="fas fa-check-double"></i> Duplicate Detection</div>
+      <div class="marquee-item"><i class="fas fa-fingerprint"></i> GSTIN Auto-Correction</div>
+    </div>
+  </div>
+
+  <!-- ═══════ PROBLEM ═══════ -->
+  <section id="problem">
+    <div class="wrap">
+      <div class="prob-grid">
+        <div class="rv-l">
+          <span class="s-tag">The Problem</span>
+          <h2 class="s-title">8 Crore Businesses.<br>One Broken Process.</h2>
+          <p class="s-desc">India's small businesses — kirana stores, textile traders, hardware shops — spend thousands
+            monthly on GST compliance. The bottleneck isn't calculation. It's getting invoices from the shopkeeper into
+            a structured format the CA can use.</p>
+          <div class="solution-box" style="margin-top:2rem;">
+            <p>The single insight: <strong>WhatsApp is the only channel where adoption is near-guaranteed.</strong>
+              Every shopkeeper already uses it every day. VyapaarBandhu requires nothing new from the user — just a
+              photo, sent on WhatsApp.</p>
+          </div>
+        </div>
+        <div class="prob-cards rv-r">
+          <div class="prob-card">
+            <div class="prob-card-ic ic-red"><i class="fas fa-clock"></i></div>
+            <div class="prob-card-body">
+              <strong>2–3 Hours Wasted Per Client</strong>
+              <p>CAs spend 2–3 hours just collecting and organizing invoices from each client before any compliance work
+                begins.</p>
+            </div>
+          </div>
+          <div class="prob-card">
+            <div class="prob-card-ic ic-red"><i class="fas fa-rupee-sign"></i></div>
+            <div class="prob-card-body">
+              <strong>₹2,000–₹5,000/month Per Business</strong>
+              <p>The average small business spends this just on basic GST compliance — and often misses ITC they're
+                entitled to claim.</p>
+            </div>
+          </div>
+          <div class="prob-card">
+            <div class="prob-card-ic ic-red"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="prob-card-body">
+              <strong>₹50/Day Penalty for Late Filing</strong>
+              <p>Business owners find out their liability on the 19th or 20th — one day before the GSTR-3B deadline.
+                Panic every month.</p>
+            </div>
+          </div>
+          <div class="prob-card">
+            <div class="prob-card-ic ic-blue"><i class="fab fa-whatsapp"></i></div>
+            <div class="prob-card-body">
+              <strong>The VyapaarBandhu Solution</strong>
+              <p>Photo → WhatsApp → 20 seconds → ITC calculated, RCM flagged, GSTR-3B JSON ready. The CA gets everything
+                organised, automatically.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ HOW IT WORKS — Tab panels (TaxOne style) ═══════ -->
+  <section id="how">
+    <div class="wrap">
+      <div class="how-intro rv">
+        <span class="s-tag">How It Works</span>
+        <h2 class="s-title">From Photo to Filed.<br>8 Steps, 0 Friction.</h2>
+        <p class="s-desc">The complete journey from a business owner sending an invoice photo to a CA downloading a
+          portal-ready GSTR-3B JSON.</p>
+      </div>
+
+      <div class="step-nav" id="stepNav">
+        <button class="step-tab active" data-panel="0"><span class="tab-num">01</span>Send Invoice</button>
+        <button class="step-tab" data-panel="1"><span class="tab-num">02</span>OCR & Extract</button>
+        <button class="step-tab" data-panel="2"><span class="tab-num">03</span>Confirm & Classify</button>
+        <button class="step-tab" data-panel="3"><span class="tab-num">04</span>CA Reviews</button>
+        <button class="step-tab" data-panel="4"><span class="tab-num">05</span>File & Export</button>
+      </div>
+
+      <div class="step-panels">
+
+        <!-- PANEL 0 -->
+        <div class="step-panel active" id="panel-0">
+          <div class="step-panel-text">
+            <div class="step-badge"><i class="fab fa-whatsapp"></i> Step 1</div>
+            <h3>Business Owner Sends Invoice on WhatsApp</h3>
+            <p>The owner takes a photo of any purchase invoice — Amazon, a local supplier, Flipkart — and sends it to
+              the VyapaarBandhu WhatsApp number. Works on blurry, angled, handwritten, and printed invoices.</p>
+            <ul class="step-checklist">
+              <li>No app to install, no portal to learn</li>
+              <li>Works with any camera-quality photo</li>
+              <li>Instant acknowledgement: "Photo mil gayi! Processing…"</li>
+              <li>Handles printed, handwritten & photographed invoices</li>
+            </ul>
+          </div>
+          <div class="step-panel-vis">
+            <div class="step-vis-header">
+              <div class="vis-dot r"></div>
+              <div class="vis-dot y"></div>
+              <div class="vis-dot g"></div>
+              <span class="vis-label">WhatsApp · VyapaarBandhu</span>
+            </div>
+            <div class="step-vis-body" style="padding: 0; background: #050810;">
+              <img src="assets/images/SendInvoice.jpeg" alt="Send Invoice"
+                style="width: 100%; height: 100%; object-fit: contain; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 1 -->
+        <div class="step-panel" id="panel-1">
+          <div class="step-panel-text">
+            <div class="step-badge"><i class="fas fa-eye"></i> Step 2</div>
+            <h3>AI Extracts 9 GST Fields from the Image</h3>
+            <p>NVIDIA Nemotron 12B VLM reads the image and extracts all critical GST fields. The GSTIN auto-correction
+              system uses Modulo 36 checksum (the same algorithm the GSTN portal uses) to fix OCR errors.</p>
+            <ul class="step-checklist">
+              <li>Seller GSTIN, invoice number, date</li>
+              <li>Taxable amount, CGST, SGST, IGST, total</li>
+              <li>Product description for classification</li>
+              <li>GSTIN auto-corrects 7 common OCR errors: I/1, O/0, S/5…</li>
+            </ul>
+          </div>
+          <div class="step-panel-vis">
+            <div class="step-vis-header">
+              <div class="vis-dot r"></div>
+              <div class="vis-dot y"></div>
+              <div class="vis-dot g"></div>
+              <span class="vis-label">OCR Extraction Result</span>
+            </div>
+            <div class="step-vis-body" style="padding: 0; background: #050810;">
+              <img src="ORC&Extract.jpeg" alt="OCR and Extract"
+                style="width: 100%; height: 100%; object-fit: contain; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 2 -->
+        <div class="step-panel" id="panel-2">
+          <div class="step-panel-text">
+            <div class="step-badge"><i class="fas fa-brain"></i> Step 3</div>
+            <h3>Maker-Checker → Classification → ITC Calculation</h3>
+            <p>Extracted details are sent back to the user for confirmation. Once confirmed, a 3-layer AI pipeline
+              classifies the invoice. The pure-Python compliance engine then calculates ITC eligibility without any AI —
+              every rule is traceable to a specific GST Act clause.</p>
+            <ul class="step-checklist">
+              <li>Human-in-the-loop: user confirms or edits before saving</li>
+              <li>Layer 1: 400+ keyword rules (brands, product types)</li>
+              <li>Layer 2: BART zero-shot NLP for ambiguous descriptions</li>
+              <li>Layer 3: Fine-tuned IndicBERT on 1,995 Indian SME transactions</li>
+              <li>Section 17(5) blocked categories auto-flagged as ineligible</li>
+            </ul>
+          </div>
+          <div class="step-panel-vis">
+            <div class="step-vis-header">
+              <div class="vis-dot r"></div>
+              <div class="vis-dot y"></div>
+              <div class="vis-dot g"></div>
+              <span class="vis-label">Classification & ITC Engine</span>
+            </div>
+            <div class="step-vis-body" style="padding: 0; background: #050810;">
+              <img src="assets/images/Confirm.jpeg" alt="Confirm and Classify"
+                style="width: 100%; height: 100%; object-fit: contain; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 3 -->
+        <div class="step-panel" id="panel-3">
+          <div class="step-panel-text">
+            <div class="step-badge"><i class="fas fa-chart-bar"></i> Step 4</div>
+            <h3>CA Reviews All Clients from One Dashboard</h3>
+            <p>The CA's web dashboard shows all clients organised by compliance risk. Traffic-light status
+              (green/yellow/red) tells the CA at a glance who is ready to file and who needs attention. One-click
+              approve.</p>
+            <ul class="step-checklist">
+              <li>Green: all invoices in, ready to file</li>
+              <li>Yellow: some invoices missing, time remaining</li>
+              <li>Red: urgent — 3 days or fewer to deadline</li>
+              <li>CA can override any invoice category before approving</li>
+              <li>No manual entry, no spreadsheets, no back-and-forth calls</li>
+            </ul>
+          </div>
+          <div class="step-panel-vis">
+            <div class="step-vis-header">
+              <div class="vis-dot r"></div>
+              <div class="vis-dot y"></div>
+              <div class="vis-dot g"></div>
+              <span class="vis-label">CA Dashboard · Client Overview</span>
+            </div>
+            <div class="step-vis-body" style="padding: 0; background: #050810;">
+              <img src="assets/images/CA_Review1.png" alt="CA Review"
+                style="width: 100%; height: 100%; object-fit: contain; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 4 -->
+        <div class="step-panel" id="panel-4">
+          <div class="step-panel-text">
+            <div class="step-badge"><i class="fas fa-file-download"></i> Step 5</div>
+            <h3>PDF Export & GSTR-3B JSON — Portal Ready</h3>
+            <p>CA downloads a filing summary PDF with their firm name on it — and a GSTR-3B JSON file in the exact
+              format accepted by the GSTN portal. Upload directly. Job done. Automated reminders go out 7, 3, and 1 day
+              before each deadline.</p>
+            <ul class="step-checklist">
+              <li>Filing summary PDF with CA firm's own branding</li>
+              <li>GSTR-3B JSON in GSTN-accepted format</li>
+              <li>White-label: business owners see the CA's name, not VyapaarBandhu</li>
+              <li>Automated deadline reminders: 7 days, 3 days, 1 day before</li>
+              <li>Admin panel: revenue metrics, all users, system health</li>
+            </ul>
+          </div>
+          <div class="step-panel-vis">
+            <div class="step-vis-header">
+              <div class="vis-dot r"></div>
+              <div class="vis-dot y"></div>
+              <div class="vis-dot g"></div>
+              <span class="vis-label">Export Centre · Sharma Traders</span>
+            </div>
+            <div class="step-vis-body" style="padding: 0; background: #050810;">
+              <img src="assets/images/FileExport.png" alt="File and Export"
+                style="width: 100%; height: 100%; object-fit: contain; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /step-panels -->
+    </div>
+  </section>
+
+  <!-- ═══════ FEATURES GRID ═══════ -->
+  <section id="features">
+    <div class="wrap">
+      <div class="feat-intro rv">
+        <span class="s-tag">All Features</span>
+        <h2 class="s-title">Everything Built.<br>Everything Live.</h2>
+        <p class="s-desc">Not a concept. Every component below is tested and running in production.</p>
+      </div>
+      <div class="features-grid rv d2">
+        <div class="feat-cell">
+          <div class="feat-ic w"><i class="fab fa-whatsapp"></i></div>
+          <h3>WhatsApp Bot</h3>
+          <p>Invoice OCR via WhatsApp with real-time replies. No app install. Works on any phone with WhatsApp.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic b"><i class="fas fa-eye"></i></div>
+          <h3>AI Vision OCR</h3>
+          <p>NVIDIA Nemotron 12B VLM extracts 9 fields from blurry, angled, handwritten Indian invoices. 87.5% accuracy.
+          </p>
+          <div class="feat-tag ai">AI</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic c"><i class="fas fa-fingerprint"></i></div>
+          <h3>GSTIN Auto-Correction</h3>
+          <p>Modulo 36 checksum — same as GSTN portal — corrects 7 OCR confusion pairs automatically with user
+            notification.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic b"><i class="fas fa-brain"></i></div>
+          <h3>3-Layer Classification</h3>
+          <p>Keywords → zero-shot BART NLP → fine-tuned IndicBERT trained on 1,995 Indian SME transactions. F1: 1.00.
+          </p>
+          <div class="feat-tag ai">AI + Trained</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic g"><i class="fas fa-gavel"></i></div>
+          <h3>Pure-Python Compliance Engine</h3>
+          <p>Zero AI for tax rules. Every GST calculation is deterministic Python, traceable to specific GST Act
+            clauses. CAs trust it.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic r"><i class="fas fa-ban"></i></div>
+          <h3>ITC Leakage Detection</h3>
+          <p>Section 17(5) blocked categories auto-flagged. Food, personal vehicles, clothing, club memberships — none
+            slip through.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic c"><i class="fas fa-chart-line"></i></div>
+          <h3>CA Dashboard — 8 Pages</h3>
+          <p>Traffic-light client overview, ITC summaries, invoice approve/reject, AI insights. All connected to live
+            database.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic b"><i class="fas fa-file-code"></i></div>
+          <h3>GSTR-3B JSON Generator</h3>
+          <p>Portal-ready JSON in the exact GSTN-accepted format. CA downloads and uploads directly. One click.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic o"><i class="fas fa-university"></i></div>
+          <h3>Bank PDF Parser</h3>
+          <p>Parses HDFC, SBI, ICICI, Axis, Kotak bank statements automatically. Cross-references with GST records.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic g"><i class="fas fa-bell"></i></div>
+          <h3>Automated Deadline Reminders</h3>
+          <p>7, 3, 1 day before GSTR-1 and GSTR-3B deadlines — auto-WhatsApp to every business owner at 9 AM daily.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic r"><i class="fas fa-copy"></i></div>
+          <h3>Duplicate Detection</h3>
+          <p>Checks invoice number + GSTIN + user before saving. Inflated ITC claims blocked automatically.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+        <div class="feat-cell">
+          <div class="feat-ic c"><i class="fas fa-user-shield"></i></div>
+          <h3>Admin Panel</h3>
+          <p>Revenue metrics, all users, invoice counts, ITC totals, system health monitoring, full audit logs.</p>
+          <div class="feat-tag live">Live</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ CA BUSINESS MODEL ═══════ -->
+  <section id="ca">
+    <div class="wrap">
+      <div class="ca-grid">
+        <div class="rv-l">
+          <span class="s-tag">Distribution Model</span>
+          <h2 class="s-title">The CA is the<br>Distribution Channel</h2>
+          <p class="s-desc">One CA firm has 40–80 small business clients. One conversation with one CA equals 40–80
+            users. The CA becomes the distribution channel, trust layer, and quality check — all at once.</p>
+          <div style="margin-top:2rem;">
+            <table class="ca-table">
+              <tr>
+                <th>Party</th>
+                <th>What They See</th>
+              </tr>
+              <tr>
+                <td>Shopkeeper</td>
+                <td style="color:var(--muted);font-size:.83rem">A WhatsApp bot their CA asked them to use. Replies carry
+                  the CA's firm name.</td>
+              </tr>
+              <tr>
+                <td>CA Firm</td>
+                <td style="color:var(--muted);font-size:.83rem">Dashboard with all clients, risk-sorted, one-click
+                  approve & PDF export.</td>
+              </tr>
+              <tr>
+                <td>VyapaarBandhu</td>
+                <td style="color:var(--muted);font-size:.83rem">Invisible to the end user. Relationship is only with the
+                  CA.</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="ca-insight rv-r">
+          <div
+            style="font-size:.75rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.5rem;">
+            White-Label — CA's Name on Everything</div>
+          <div class="ca-flow">
+            <div class="ca-step">
+              <div class="ca-step-num">1</div>
+              <div class="ca-step-body">
+                <strong>Filing Summary PDF</strong>
+                <p>CA firm name and logo at the top. VyapaarBandhu not mentioned anywhere.</p>
+              </div>
+            </div>
+            <div class="ca-step">
+              <div class="ca-step-num">2</div>
+              <div class="ca-step-body">
+                <strong>WhatsApp Deadline Reminders</strong>
+                <p>Sent as: "Your CA firm has set up this reminder for you." Not VyapaarBandhu.</p>
+              </div>
+            </div>
+            <div class="ca-step">
+              <div class="ca-step-num">3</div>
+              <div class="ca-step-body">
+                <strong>Dashboard Header</strong>
+                <p>CA firm name visible. Their branding, their identity, their clients.</p>
+              </div>
+            </div>
+            <div class="ca-step">
+              <div class="ca-step-num">4</div>
+              <div class="ca-step-body">
+                <strong>Client Onboarding Message</strong>
+                <p>Sent in the CA's name when they add a new client. Instant and automatic.</p>
+              </div>
+            </div>
+          </div>
+          <div
+            style="margin-top:1.5rem;padding:1rem;background:rgba(0,200,255,.06);border:1px solid rgba(0,200,255,.15);border-radius:10px;font-size:.83rem;color:rgba(255,255,255,.65);">
+            <strong style="color:var(--cyan);display:block;margin-bottom:.4rem;">Why CAs adopt immediately</strong>
+            They're not endorsing an external product — they're deploying their own branded tool that saves 2–3 hours
+            per client per month, without giving up control.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ WHAT'S BUILT ═══════ -->
+  <section id="built">
+    <div class="wrap">
+      <div class="built-intro rv">
+        <span class="s-tag">What's Built</span>
+        <h2 class="s-title">Not a Concept.<br>All of This is Live.</h2>
+        <p class="s-desc" style="margin:0 auto">Every item below is built, tested, and running in production. This is a
+          working product.</p>
+      </div>
+      <div class="built-grid rv d2">
+        <div class="built-item"><i class="fab fa-whatsapp"></i><strong>WhatsApp Bot</strong><span>Invoice photo
+            processing end-to-end</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-eye"></i><strong>AI OCR</strong><span>9-field extraction from real
+            invoices</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-fingerprint"></i><strong>GSTIN Corrector</strong><span>Modulo 36
+            checksum auto-fix</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-brain"></i><strong>3-Layer Classifier</strong><span>Keywords → NLP →
+            IndicBERT</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-calculator"></i><strong>ITC Engine</strong><span>Inter & intra-state,
+            zero AI</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-copy"></i><strong>Duplicate Detection</strong><span>Invoice no. + GSTIN
+            + user check</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-university"></i><strong>Bank PDF Parser</strong><span>HDFC, SBI, ICICI,
+            Axis, Kotak</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-comment-dots"></i><strong>Summary Command</strong><span>'summary' → ITC
+            total + deadline</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-chart-line"></i><strong>CA Dashboard</strong><span>8 pages, all live
+            data</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-check-circle"></i><strong>Approve / Reject</strong><span>Real-time
+            status update in DB</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-file-pdf"></i><strong>Filing PDF</strong><span>CA-branded,
+            per-client</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-file-code"></i><strong>GSTR-3B JSON</strong><span>GSTN portal-ready
+            format</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-paper-plane"></i><strong>Auto WhatsApp</strong><span>Client add
+            triggers welcome msg</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-bell"></i><strong>Deadline Alerts</strong><span>7, 3, 1 day reminders
+            at 9 AM</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-lock"></i><strong>JWT Auth</strong><span>CA account registration &
+            login</span>
+          <div class="live-badge">Live</div>
+        </div>
+        <div class="built-item"><i class="fas fa-tachometer-alt"></i><strong>Admin Panel</strong><span>Users, health,
+            revenue metrics</span>
+          <div class="live-badge">Live</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ TECH STACK ═══════ -->
+  <section id="tech">
+    <div class="wrap">
+      <div style="text-align:center;" class="rv">
+        <span class="s-tag">Tech Stack</span>
+        <h2 class="s-title">Built for India.<br>Engineered for Scale.</h2>
+      </div>
+
+      <!-- Performance bars -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;margin-bottom:4rem;"
+        class="rv d2">
+        <div>
+          <div
+            style="font-size:.75rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2rem;">
+            Performance Metrics</div>
+          <div class="perf-row">
+            <div class="perf-label-row"><span>OCR Accuracy (real blurry invoices)</span><span>87.5%</span></div>
+            <div class="perf-track">
+              <div class="perf-fill" style="--w:87.5%;width:var(--w)"></div>
+            </div>
+          </div>
+          <div class="perf-row">
+            <div class="perf-label-row"><span>Classifier F1 Score (7 GST categories)</span><span>70%</span></div>
+            <div class="perf-track">
+              <div class="perf-fill" style="width:100%"></div>
+            </div>
+          </div>
+          <div class="perf-row">
+            <div class="perf-label-row"><span>WhatsApp Response Time</span><span>&lt;20s</span></div>
+            <div class="perf-track">
+              <div class="perf-fill" style="width:90%"></div>
+            </div>
+          </div>
+          <div class="perf-row">
+            <div class="perf-label-row"><span>Gross Margin at 500 Users</span><span>92%</span></div>
+            <div class="perf-track">
+              <div class="perf-fill" style="width:92%"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            style="font-size:.75rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2rem;">
+            Business Economics</div>
+          <div class="data-row" style="margin-bottom:.6rem;"><span class="label">Training Dataset</span><span
+              class="val cyan">1,995 Indian SME transactions</span></div>
+        </div>
+      </div>
+
+      <div class="tech-cols">
+        <div class="tech-col rv d1">
+          <div class="tech-col-header">
+            <div class="tech-col-icon b"><i class="fas fa-server"></i></div>
+            <h3>Backend</h3>
+          </div>
+          <div class="tech-item"><span>FastAPI</span><span class="tech-pill tp-blue">Core API</span></div>
+          <div class="tech-item"><span>PostgreSQL</span><span class="tech-pill tp-cyan">Database</span></div>
+          <div class="tech-item"><span>SQLAlchemy</span><span class="tech-pill tp-blue">ORM</span></div>
+          <div class="tech-item"><span>Pydantic</span><span class="tech-pill tp-blue">Validation</span></div>
+          <div class="tech-item"><span>ReportLab</span><span class="tech-pill tp-cyan">PDF Gen</span></div>
+          <div class="tech-item"><span>Twilio WhatsApp API</span><span class="tech-pill tp-green">Messaging</span></div>
+          <div class="tech-item"><span>JWT Authentication</span><span class="tech-pill tp-blue">Auth</span></div>
+          <div class="tech-item"><span>Render</span><span class="tech-pill tp-green">Hosting</span></div>
+        </div>
+        <div class="tech-col rv d2">
+          <div class="tech-col-header">
+            <div class="tech-col-icon c"><i class="fas fa-desktop"></i></div>
+            <h3>Frontend</h3>
+          </div>
+          <div class="tech-item"><span>React</span><span class="tech-pill tp-cyan">Core UI</span></div>
+          <div class="tech-item"><span>TypeScript</span><span class="tech-pill tp-blue">Type Safety</span></div>
+          <div class="tech-item"><span>Tailwind CSS</span><span class="tech-pill tp-cyan">Styling</span></div>
+          <div class="tech-item"><span>Recharts</span><span class="tech-pill tp-blue">Charts</span></div>
+          <div class="tech-item"><span>Vercel</span><span class="tech-pill tp-green">Hosting</span></div>
+          <div class="tech-item"><span>TypeScript 60.9%</span><span class="tech-pill tp-cyan">Codebase</span></div>
+        </div>
+        <div class="tech-col rv d3">
+          <div class="tech-col-header">
+            <div class="tech-col-icon g"><i class="fas fa-robot"></i></div>
+            <h3>AI / ML</h3>
+          </div>
+          <div class="tech-item"><span>NVIDIA Nemotron 12B VLM</span><span class="tech-pill tp-blue">OCR</span></div>
+          <div class="tech-item"><span>OpenRouter API</span><span class="tech-pill tp-cyan">VLM Access</span></div>
+          <div class="tech-item"><span>BART-large-mnli</span><span class="tech-pill tp-blue">Zero-shot</span></div>
+          <div class="tech-item"><span>IndicBERT (fine-tuned)</span><span class="tech-pill tp-green">Custom</span></div>
+          <div class="tech-item"><span>XLM-RoBERTa</span><span class="tech-pill tp-blue">Base Model</span></div>
+          <div class="tech-item"><span>HuggingFace Inference</span><span class="tech-pill tp-cyan">ML API</span></div>
+          <div class="tech-item"><span>Docker Compose</span><span class="tech-pill tp-green">Infra</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ HONEST RISKS ═══════ -->
+  <section id="risks" style="padding:6rem 2rem;">
+    <div class="wrap">
+      <div class="rv" style="text-align:center;margin-bottom:1rem;">
+        <span class="s-tag">Honest Assessment</span>
+        <h2 class="s-title">Where It Can Go Wrong —<br>And How We Handle It</h2>
+        <p class="s-desc" style="margin:0 auto 3rem">Every failure mode has a mitigation built into the system.
+          Transparency is a trust-building feature for CAs.</p>
+      </div>
+      <div class="risk-grid">
+        <div class="risk-card rv d1">
+          <div class="risk-header"><span class="risk-icon">👁️</span><strong>OCR Reads Invoice Incorrectly</strong>
+          </div>
+          <p>AI vision model misreads a digit or letter. Happens more often on very blurry or handwritten invoices.</p>
+          <div class="risk-mitigation"><strong>Mitigation</strong>System never saves without human confirmation. Every
+            field is shown back. Below 85% confidence → user must verify each field explicitly. CA approval is the
+            second check.</div>
+        </div>
+        <div class="risk-card rv d2">
+          <div class="risk-header"><span class="risk-icon">🔢</span><strong>GSTIN Auto-Correction Guesses Wrong</strong>
+          </div>
+          <p>Two different valid-looking GSTINs might both satisfy the Modulo 36 checksum in rare edge cases.</p>
+          <div class="risk-mitigation"><strong>Mitigation</strong>System tells user explicitly: "GSTIN corrected from X
+            to Y — Valid (Maharashtra)". User can override with 'edit gstin' at any time.</div>
+        </div>
+        <div class="risk-card rv d3">
+          <div class="risk-header"><span class="risk-icon">🏷️</span><strong>Invoice Classification Error</strong></div>
+          <p>A food invoice classified as Office Supplies leads to incorrect ITC eligibility — the most consequential
+            error.</p>
+          <div class="risk-mitigation"><strong>Mitigation</strong>Classification shown to CA on dashboard. CA can
+            override before approving. Vague descriptions ('miscellaneous') flagged for mandatory manual CA review.
+          </div>
+        </div>
+        <div class="risk-card rv d1">
+          <div class="risk-header"><span class="risk-icon">⚠️</span><strong>Manipulated or Duplicate Invoice</strong>
+          </div>
+          <p>Business owner sends inflated amounts or the same invoice twice to claim excess ITC.</p>
+          <div class="risk-mitigation"><strong>Mitigation</strong>Duplicate detection blocks same invoice number + GSTIN
+            + user. Anomaly detection flags amounts 2.5× above the user's historical average for CA review.</div>
+        </div>
+        <div class="risk-card rv d2">
+          <div class="risk-header"><span class="risk-icon">⚖️</span><strong>GST Law Changes</strong></div>
+          <p>GST rates change, new blocked categories added, or thresholds shift — making the compliance engine
+            outdated.</p>
+          <div class="risk-mitigation"><strong>Mitigation</strong>Compliance engine is a single Python file with clearly
+            labeled sections per GST Act clause. Any change is made in one place with a clear audit trail. No AI = no
+            ambiguity.</div>
+        </div>
+        <div class="risk-card rv d3">
+          <div class="risk-header"><span class="risk-icon">📅</span><strong>Month-End Invoice Dump</strong></div>
+          <p>Business owner sends 50 invoices on the 19th — defeats the purpose of running ITC tracking.</p>
+          <div class="risk-mitigation"><strong>Mitigation</strong>System handles any volume on any day. OCR API rate
+            limits can be scaled. Reminder system designed to encourage early, consistent uploads throughout the month.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ CTA ═══════ -->
+  <section id="cta">
+    <div class="cta-glow"></div>
+    <div class="wrap">
+      <div class="cta-inner rv">
+        <span class="s-tag">Get Started</span>
+        <h2 class="cta-title">Ready to See<br>It in Action?</h2>
+        <p class="cta-sub">Explore the live CA dashboard, read the API docs, or star the repo. Built solo in 8 weeks.
+          Ready for CA firms to pilot.</p>
+        <div class="cta-btns">
+          <a href="https://vyapaarbandhu-ca-elite.vercel.app" target="_blank" class="btn-cta-main"><i
+              class="fas fa-chart-bar"></i> Live CA Dashboard</a>
+          <a href="https://github.com/meetmehta136/Vyapaar-Bandhu" target="_blank" class="btn-cta-sec"><i
+              class="fab fa-github"></i> View on GitHub</a>
+          <a href="https://vyapaar-bandhu.onrender.com/docs" target="_blank" class="btn-cta-sec"><i
+              class="fas fa-book"></i> API Docs</a>
+        </div>
+        <div class="cta-links">
+          <a href="https://huggingface.co/meet136/indicbert-gst-classifier" target="_blank"><i class="fas fa-robot"></i>
+            HuggingFace Model</a>
+          <a href="https://github.com/meetmehta136" target="_blank"><i class="fab fa-github"></i> @meetmehta136</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ FOOTER ═══════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="margin-bottom:.8rem;display:inline-flex;">
+          <img src="assets/images/VBLogo.png" alt="VyapaarBandhu Logo" style="height: 36px; object-fit: contain;">
+        </a>
+        <p>WhatsApp-native GST compliance automation for Indian small businesses and CA firms.</p>
+        <div style="margin-top:1.2rem;font-size:.75rem;color:rgba(255,255,255,.25);">Confidential · March 2026 ·
+          Prepared by Meet Mehta</div>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="https://vyapaarbandhu-ca-elite.vercel.app" target="_blank">CA Dashboard</a>
+        <a href="https://vyapaar-bandhu.onrender.com/docs" target="_blank">API Documentation</a>
+        <a href="https://huggingface.co/meet136/indicbert-gst-classifier" target="_blank">ML Model</a>
+        <a href="#features">All Features</a>
+      </div>
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="https://github.com/meetmehta136/Vyapaar-Bandhu" target="_blank">GitHub Repository</a>
+        <a href="#how">How It Works</a>
+        <a href="#risks">Honest Assessment</a>
+        <a href="#tech">Tech Stack</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="https://github.com/meetmehta136" target="_blank">GitHub: @meetmehta136</a>
+        <a href="https://huggingface.co/meet136" target="_blank">HuggingFace: meet136</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 VyapaarBandhu · Built solo by Meet Mehta · Confidential</p>
+      <div class="footer-social">
+        <a href="https://github.com/meetmehta136/Vyapaar-Bandhu" target="_blank"><i class="fab fa-github"></i></a>
+        <a href="https://huggingface.co/meet136" target="_blank"><i class="fas fa-robot"></i></a>
+        <a href="https://vyapaar-bandhu.onrender.com/docs" target="_blank"><i class="fas fa-book"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODALS -->
+  <div id="videoModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10001; justify-content:center; align-items:center; backdrop-filter: blur(8px);">
+    <div
+      style="position:relative; width:90%; max-width:900px; background:#000; border-radius:12px; padding:20px; border: 1px solid rgba(10,110,255,0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+      <button onclick="closeModal('videoModal')" style="position:absolute; right:15px; top:15px; background:rgba(255,255,255,0.1); border-radius:50%; width:36px; height:36px; color:#fff; border:none; font-size:20px; cursor:pointer; display:flex; justify-content:center; align-items:center; z-index:2; transition: background 0.3s;">&times;</button>
+      <video id="demoVideo" controls style="width:100%; height:auto; border-radius:8px;">
+        <source src="assets/DemoVideo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+
+  <div id="caModal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10001; justify-content:center; align-items:center; backdrop-filter: blur(8px);">
+    <div
+      style="position:relative; width:90%; max-width:800px; max-height:85vh; background:rgba(8,13,26,0.95); border-radius:12px; padding:20px; padding-top: 50px; overflow-y:auto; border: 1px solid rgba(10,110,255,0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+      <button onclick="closeModal('caModal')" style="position:absolute; right:15px; top:10px; background:rgba(255,255,255,0.1); border-radius:50%; width:36px; height:36px; color:#fff; border:none; font-size:20px; cursor:pointer; display:flex; justify-content:center; align-items:center; z-index:10; transition: background 0.3s;">&times;</button>
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <img src="assets/images/CA_Review1.png"
+          style="width:100%; border-radius:8px; border: 1px solid rgba(255,255,255,0.1);" alt="CA Review 1">
+        <img src="assets/images/CA_Review2.png"
+          style="width:100%; border-radius:8px; border: 1px solid rgba(255,255,255,0.1);" alt="CA Review 2">
+        <img src="assets/images/CA_Review3.png"
+          style="width:100%; border-radius:8px; border: 1px solid rgba(255,255,255,0.1);" alt="CA Review 3">
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js" defer></script>
+</body>
+
+</html>
