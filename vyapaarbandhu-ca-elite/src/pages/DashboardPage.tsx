@@ -42,6 +42,32 @@ const DashboardPage = () => {
   const { data: stats, loading: statsLoading } = useDashboardStats();
   const { data: invoicesData, loading: invoicesLoading } = useInvoices();
   const [clients, setClients] = useState<any[]>([]);
+  const [gstr3bLoading, setGstr3bLoading] = useState(false);
+
+  const downloadGSTR3B = async () => {
+    setGstr3bLoading(true);
+    try {
+      const period = new Date().toISOString().slice(0, 7); // YYYY-MM
+      const base   = (import.meta as any).env?.VITE_API_URL || 'https://vyapaar-bandhu-h53q.onrender.com';
+      const res    = await fetch(`${base}/compliance/gstr3b-json/${period}`);
+      const json   = await res.json();
+
+      // Download as .json file
+      const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `GSTR3B_${period}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('Download failed. Check your connection.');
+    } finally {
+      setGstr3bLoading(false);
+    }
+  };
 
   useEffect(() => {
     getClients().then(c => setClients(c || []));
@@ -92,11 +118,37 @@ const DashboardPage = () => {
 
   return (
     <AppLayout>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">{getGreeting()}, CA 👋</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {getFilingPeriod()} · {statsLoading ? 'Loading...' : '● Live Data'}
-        </p>
+      <div className="mb-8 flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">{getGreeting()}, CA 👋</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {getFilingPeriod()} · {statsLoading ? 'Loading...' : '● Live Data'}
+          </p>
+        </div>
+        <button
+          onClick={downloadGSTR3B}
+          disabled={gstr3bLoading}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/20 text-primary-val border border-primary/30 hover:bg-primary/30 transition-colors text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {gstr3bLoading ? (
+            <>
+              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+              </svg>
+              Generating...
+            </>
+          ) : (
+            <>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Download GSTR-3B JSON
+            </>
+          )}
+        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
